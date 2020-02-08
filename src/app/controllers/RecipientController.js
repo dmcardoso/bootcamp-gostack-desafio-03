@@ -2,14 +2,25 @@ import * as Yup from 'yup';
 import Recipient from '../models/Recipient';
 
 class RecipientController {
+    async index(request, response) {
+        const { page = 1 } = request.query;
+        const recipients = await Recipient.findAll({
+            order: ['name'],
+            limit: 20,
+            offset: (page - 1) * 20,
+        });
+
+        return response.json(recipients);
+    }
+
     async store(request, response) {
         const schema = Yup.object().shape({
-            nome: Yup.string().required(),
-            rua: Yup.string().required(),
-            numero: Yup.string().required(),
-            complemento: Yup.string(),
-            estado: Yup.string().required(),
-            cidade: Yup.string().required(),
+            name: Yup.string().required(),
+            street: Yup.string().required(),
+            number: Yup.string().required(),
+            complement: Yup.string(),
+            state: Yup.string().required(),
+            city: Yup.string().required(),
             cep: Yup.string().required(),
         });
 
@@ -18,7 +29,7 @@ class RecipientController {
         }
 
         const recipientExists = await Recipient.findOne({
-            where: { nome: request.body.nome },
+            where: { name: request.body.name },
         });
 
         if (recipientExists) {
@@ -33,12 +44,12 @@ class RecipientController {
 
     async update(request, response) {
         const schema = Yup.object().shape({
-            nome: Yup.string(),
-            rua: Yup.string(),
-            numero: Yup.string(),
-            complemento: Yup.string(),
-            estado: Yup.string(),
-            cidade: Yup.string(),
+            name: Yup.string(),
+            street: Yup.string(),
+            number: Yup.string(),
+            complement: Yup.string(),
+            state: Yup.string(),
+            city: Yup.string(),
             cep: Yup.string(),
         });
 
@@ -47,13 +58,13 @@ class RecipientController {
         }
 
         const { id } = request.params;
-        const { nome } = request.body;
+        const { name } = request.body;
 
         const recipient = await Recipient.findByPk(id);
 
-        if (nome && nome !== recipient.nome) {
+        if (name && name !== recipient.name) {
             const recipientExists = await Recipient.findOne({
-                where: { nome: request.body.nome },
+                where: { name },
             });
 
             if (recipientExists) {
