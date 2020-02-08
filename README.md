@@ -7,7 +7,7 @@
 </h3>
 
 <h3 align="center">
-  :warning: Etapa 1/4 do Desafio Final :warning:
+  :warning: Etapa 2/4 do Desafio Final :warning:
 </h3>
 
 ## Install
@@ -27,6 +27,8 @@ yarn sequelize db:seed:all
 
 ```sh
 yarn dev
+
+yarn queue
 ```
 
 ## Author
