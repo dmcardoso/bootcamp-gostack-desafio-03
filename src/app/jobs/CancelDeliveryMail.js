@@ -1,24 +1,24 @@
 import Mail from '../../lib/Mail';
 
-class DeliveryMail {
+class CancelDeliveryMail {
     get key() {
-        return 'DeliveryMail';
+        return 'CancelDeliveryMail';
     }
 
     async handle({ data }) {
-        const { recipient, deliveryman, product } = data;
+        const { deliveryman, name, product } = data;
 
         await Mail.sendMail({
             to: `${deliveryman.name} <${deliveryman.email}>`,
-            subject: 'New delivery',
-            template: 'deliverymail',
+            subject: 'Delivery canceled',
+            template: 'canceldeliverymail',
             context: {
                 deliveryman: deliveryman.name,
+                name,
                 product,
-                ...recipient,
             },
         });
     }
 }
 
-export default new DeliveryMail();
+export default new CancelDeliveryMail();

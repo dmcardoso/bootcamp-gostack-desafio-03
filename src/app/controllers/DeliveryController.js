@@ -5,6 +5,7 @@ import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 import Queue from '../../lib/Queue';
 import DeliveryMail from '../jobs/DeliveryMail';
+import CancelDeliveryMail from '../jobs/CancelDeliveryMail';
 
 class DeliverymanController {
     async index(request, response) {
@@ -161,7 +162,8 @@ class DeliverymanController {
     }
 
     async delete(request, response) {
-        const delivery = await Delivery.findByPk(request.params.id, {
+        const { deliveryId } = request.params;
+        const delivery = await Delivery.findByPk(deliveryId, {
             include: [
                 {
                     model: Recipient,
@@ -191,8 +193,20 @@ class DeliverymanController {
             ],
         });
 
-        delivery.canceled_at = new Date();
-        await delivery.save();
+        if (!delivery) {
+            return response.json({ error: 'Invalid delivery' });
+        }
+
+        await delivery.update({ canceled_at: new Date() });
+
+        await Queue.add(CancelDeliveryMail.key, {
+            product: delivery.product,
+            name: delivery.recipients.name,
+            deliveryman: {
+                email: delivery.deliveryman.email,
+                name: delivery.deliveryman.name,
+            },
+        });
 
         return response.json(delivery);
     }

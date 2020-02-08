@@ -1,6 +1,5 @@
 import { setSeconds, setMinutes, setHours, isAfter, isBefore } from 'date-fns';
 import * as Yup from 'yup';
-import { Op } from 'sequelize';
 import Delivery from '../models/Delivery';
 
 class WithdrawController {
